@@ -6,7 +6,9 @@ import "github.com/kataras/iris"
 func CreateApp() *iris.Application {
 	app := iris.New()
 
-	app.Get("/MooredNow/{id_portinformer:string}", MooredNow)
+	app.Get("/mooredNow/{id_portinformer:string}", MooredNow)
+	app.Get("/anchoredNow/{id_portinformer:string}", AnchoredNow)
+	app.Get("/arrivalPrevisions/{id_portinformer:string}", AllArrivalPrevisions)
 
 	return app
 }

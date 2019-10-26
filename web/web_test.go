@@ -11,5 +11,7 @@ func TestWeb(t *testing.T) {
 
 	e := httptest.New(t, app)
 
-	e.GET("/MooredNow/28").Expect().Status(httptest.StatusOK)
+	e.GET("/mooredNow/28").Expect().Status(httptest.StatusOK)
+	e.GET("/anchoredNow/28").Expect().Status(httptest.StatusOK)
+
 }

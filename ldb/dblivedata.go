@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"database/sql"
 	"github.com/gchaincl/dotsql"
+	"log"
 )
 
 // AllMoored todo doc
@@ -61,5 +62,154 @@ func (c connector) AllMoored(idPortinformer string) []map[string]string {
 
 		result = append(result, tmpDict)
 	}
+	return result
+}
+
+
+
+// AllAnchored todo doc
+func (c connector) AllAnchored(idPortinformer string) []map[string]string {
+	var idControlUnitData sql.NullString
+	var shipName, anchoringTime, currentActivity, shippedGoods, tsReadiness sql.NullString
+	var shipType, iso3, grossTonnage, anchoragePoint, length, width, agency, tsPlannedMooring sql.NullString
+	var result []map[string]string = []map[string]string{}
+
+	dot, err := dotsql.LoadFromFile("/home/deeper-x/go/src/github.com/deeper-x/krowki/qsql/realtime.sql")
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	rows, err := dot.Query(c.db, "all-anchored", idPortinformer, idPortinformer)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		err := rows.Scan(
+			&idControlUnitData,
+			&shipName,
+			&anchoringTime,
+			&currentActivity,
+			&anchoragePoint,
+			&shipType,
+			&iso3,
+			&grossTonnage,
+			&length,
+			&width,
+			&agency,
+			&shippedGoods,
+			&tsPlannedMooring,
+			&tsReadiness,
+		)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		idControlUnitDataStr := idControlUnitData
+
+		tmpDict := map[string]string{
+			"id_trip":            idControlUnitDataStr.String,
+			"ship":               shipName.String,
+			"ship_type":          shipType.String,
+			"anchoring_time":     anchoringTime.String,
+			"current_activity":   currentActivity.String,
+			"anchorage_point":    anchoragePoint.String,
+			"iso3":               iso3.String,
+			"gross_tonnage":      grossTonnage.String,
+			"length":             length.String,
+			"width":              width.String,
+			"agency":             agency.String,
+			"shipped_goods":      shippedGoods.String,
+			"ts_planned_mooring": tsPlannedMooring.String,
+			"ts_readiness":       tsReadiness.String,
+		}
+
+		result = append(result, tmpDict)
+	}
+
+	return result
+}
+
+
+
+//ArrivalPrevisions todo doc
+func (c connector) AllArrivalPrevisions(idPortinformer string) []map[string]string {
+	var idControlUnitData, shipName sql.NullString
+	var tsArrivalPrevision, shipType sql.NullString
+	var shipFlag, shipWidth, shipLength, grossTonnage sql.NullString
+	var netTonnage, draftAft, draftFwd sql.NullString
+	var agency, cargoOnBoard sql.NullString
+	var lastPortOfCall sql.NullString
+	var destinationQuayBerth sql.NullString
+	var destinationRoadstead sql.NullString
+
+	var result []map[string]string = []map[string]string{}
+
+	dot, err := dotsql.LoadFromFile("/home/deeper-x/go/src/github.com/deeper-x/krowki/qsql/realtime.sql")
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	rows, err := dot.Query(c.db, "arrival-previsions", idPortinformer)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		err := rows.Scan(
+			&shipName,
+			&tsArrivalPrevision,
+			&shipType,
+			&shipFlag,
+			&shipWidth,
+			&shipLength,
+			&grossTonnage,
+			&netTonnage,
+			&draftAft,
+			&draftFwd,
+			&agency,
+			&lastPortOfCall,
+			&destinationQuayBerth,
+			&destinationRoadstead,
+			&cargoOnBoard,
+		)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		idControlUnitDataStr := idControlUnitData
+
+		tmpDict := map[string]string{
+			"id_trip":                idControlUnitDataStr.String,
+			"ship":                   shipName.String,
+			"ts_arrival_prevision":   tsArrivalPrevision.String,
+			"ship_type":              shipType.String,
+			"ship_flag":              shipFlag.String,
+			"ship_width":             shipWidth.String,
+			"ship_length":            shipLength.String,
+			"gross_tonnage":          grossTonnage.String,
+			"net_tonnage":            netTonnage.String,
+			"draft_aft":              draftAft.String,
+			"draft_fwd":              draftFwd.String,
+			"agency":                 agency.String,
+			"last_port_of_call":      lastPortOfCall.String,
+			"destination_quay_berth": destinationQuayBerth.String,
+			"destination_roadstead":  destinationRoadstead.String,
+			"cargo_on_board":         cargoOnBoard.String,
+		}
+
+		result = append(result, tmpDict)
+	}
+
 	return result
 }
