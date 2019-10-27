@@ -1,10 +1,11 @@
 package ldb
 
 import (
-	"fmt"
 	"database/sql"
-	"github.com/gchaincl/dotsql"
+	"fmt"
 	"log"
+
+	"github.com/gchaincl/dotsql"
 )
 
 // AllMoored todo doc
@@ -64,8 +65,6 @@ func (c connector) AllMoored(idPortinformer string) []map[string]string {
 	}
 	return result
 }
-
-
 
 // AllAnchored todo doc
 func (c connector) AllAnchored(idPortinformer string) []map[string]string {
@@ -134,8 +133,6 @@ func (c connector) AllAnchored(idPortinformer string) []map[string]string {
 
 	return result
 }
-
-
 
 //ArrivalPrevisions todo doc
 func (c connector) AllArrivalPrevisions(idPortinformer string) []map[string]string {
@@ -206,6 +203,78 @@ func (c connector) AllArrivalPrevisions(idPortinformer string) []map[string]stri
 			"destination_quay_berth": destinationQuayBerth.String,
 			"destination_roadstead":  destinationRoadstead.String,
 			"cargo_on_board":         cargoOnBoard.String,
+		}
+
+		result = append(result, tmpDict)
+	}
+
+	return result
+}
+
+//GetTodayArrivals todo doc
+func (c connector) GetTodayArrivals(idPortinformer string) []map[string]string {
+	var idTrip, shipName, shipType, tsSighting, shipFlag, shipWidth, shipLength sql.NullString
+	var grossTonnage, netTonnage, draftAft, draftFwd, agency, lastPortOfCall sql.NullString
+	var portDestination, destinationQuayBerth, destinationRoadstead sql.NullString
+
+	var result []map[string]string = []map[string]string{}
+
+	dot, err := dotsql.LoadFromFile("/home/deeper-x/go/src/github.com/deeper-x/krowki/qsql/realtime.sql")
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	idState := 5
+	rows, err := dot.Query(c.db, "arrivals", idState, idState, idState, idPortinformer, idState)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		err := rows.Scan(
+			&idTrip,
+			&shipName,
+			&shipType,
+			&tsSighting,
+			&shipFlag,
+			&shipWidth,
+			&shipLength,
+			&grossTonnage,
+			&netTonnage,
+			&draftAft,
+			&draftFwd,
+			&agency,
+			&lastPortOfCall,
+			&portDestination,
+			&destinationQuayBerth,
+			&destinationRoadstead,
+		)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		tmpDict := map[string]string{
+			"id_trip":                idTrip.String,
+			"ship_name":              shipName.String,
+			"ship_type":              shipType.String,
+			"ts_sighting":            tsSighting.String,
+			"ship_flag":              shipFlag.String,
+			"ship_width":             shipWidth.String,
+			"ship_length":            shipLength.String,
+			"gross_tonnage":          grossTonnage.String,
+			"net_tonnage":            netTonnage.String,
+			"draft_aft":              draftAft.String,
+			"draft_fwd":              draftFwd.String,
+			"agency":                 agency.String,
+			"last_port_of_call":      lastPortOfCall.String,
+			"port_destination":       portDestination.String,
+			"destination_quay_berth": destinationQuayBerth.String,
+			"destination_roadstead":  destinationRoadstead.String,
 		}
 
 		result = append(result, tmpDict)

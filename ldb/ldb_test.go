@@ -69,13 +69,34 @@ func TestAllArrivalPrevisions(t *testing.T) {
 
 	defer db.Close()
 
-	expectedRows := sqlmock.NewRows([]string{"id_ship"})
+	expectedRows := sqlmock.NewRows([]string{"ship_description"})
 
-	mock.ExpectQuery("SELECT ship_description AS ship, ts_arrival_prevision,").WithArgs("28").WillReturnRows(expectedRows)
+	mock.ExpectQuery("SELECT ship_description AS ship, ts_arrival_prevision").WithArgs("28").WillReturnRows(expectedRows)
 
 	mConn := NewConnection(db)
 
 	mConn.AllArrivalPrevisions("28")
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("%v", err)
+	}
+}
+
+func TestAllArrivals(t *testing.T) {
+	db, mock, err := sqlmock.New()
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	defer db.Close()
+
+	expectedRows := sqlmock.NewRows([]string{"id_control_unit_data"})
+	mock.ExpectQuery("SELECT id_control_unit_data AS id_trip,").WithArgs("28").WillReturnRows(expectedRows)
+
+	mConn := NewConnection(db)
+
+	mConn.GetTodayArrivals("28")
 
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("%v", err)

@@ -18,6 +18,7 @@ type ResultSet interface {
 	AllMoored(idPortinformer string) []map[string]string
 	AllAnchored(idPortinformer string) []map[string]string
 	AllArrivalPrevisions(idPortinformer string) []map[string]string
+	GetTodayArrivals(idPortinformer string) []map[string]string
 }
 
 type connector struct {

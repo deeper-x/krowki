@@ -53,4 +53,17 @@ func AllArrivalPrevisions(ctx iris.Context) {
 	ctx.JSON(allArrivalPrevisions)
 }
 
+// AllArrivals todo doc
+func AllArrivals(ctx iris.Context) {
+	db, err := ldb.Connect()
 
+	if err != nil {
+		log.Println(err)
+	}
+
+	conn := ldb.NewConnection(db)
+	idPortinformer := ctx.Params().Get("id_portinformer")
+	allArrivals := conn.GetTodayArrivals(idPortinformer)
+
+	ctx.JSON(allArrivals)
+}

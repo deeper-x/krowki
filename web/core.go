@@ -9,6 +9,7 @@ func CreateApp() *iris.Application {
 	app.Get("/mooredNow/{id_portinformer:string}", MooredNow)
 	app.Get("/anchoredNow/{id_portinformer:string}", AnchoredNow)
 	app.Get("/arrivalPrevisions/{id_portinformer:string}", AllArrivalPrevisions)
+	app.Get("/arrivals/{id_portinformer:string}", AllArrivals)
 
 	return app
 }
